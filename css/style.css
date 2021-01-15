@@ -210,3 +210,17 @@ section.pie-chart {
 .course-wrapper input {
   padding-right: 32px!important;
 }
+
+/*  */
+td {
+  border-radius: 0!important;
+}
+tr.odd {
+  background: #212121!important;
+}
+tr.even {
+  background: #333333!important;
+}
+.dataTables_paginate {
+  color: rgba(255,255,255,0.6)
+}
