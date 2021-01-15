@@ -1,4 +1,3 @@
-
 const clearButton = document.querySelector('.clear-button');
 clearButton.addEventListener('click', () => {
   const courseInputElt = document.getElementById('course');
@@ -53,6 +52,11 @@ function courseAutocomplete() {
     /**
      * Table
      */
+    $('#table_id').DataTable().destroy();
+    $('#table_id tbody').empty();
+    $('#table-columns').html(`<th>Academic Session</th>
+    <th>Semester</th>`);
+
     function union(setA, setB) {
       let _union = new Set(setA)
       for (let elem of setB) {
@@ -104,9 +108,8 @@ function courseAutocomplete() {
       tableDataContainer.appendChild(row);
     });
     $(document).ready( function () {
-      $('#table_id').DataTable();
+      $('#table_id').DataTable({"order": [0,'desc']});
     });
-
   }
 }
 let flattenedGrades = null;
