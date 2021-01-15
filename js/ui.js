@@ -1,3 +1,4 @@
+
 const clearButton = document.querySelector('.clear-button');
 clearButton.addEventListener('click', () => {
   const courseInputElt = document.getElementById('course');
@@ -27,19 +28,9 @@ function courseAutocomplete() {
     const courseData = flattenedGrades[course].sort((a,b) => `${b[0]}${b[1]}`.localeCompare(`${a[0]}${a[1]}`));
     console.log(courseData);
 
-    // courseData.forEach((data, index) => {
-    //   [sess, sem, _, gradeObj] = data;
-    //   Object.keys(gradeObj).sort().forEach((grade) => {
-    //     const listItem = document.createElement('li');
-    //     const listName = document.createElement('em');
-    //     const numbers = document.createElement('span');
-    //     numbers.textContent = Grades[grade];
-    //     listName.textContent = grade.trim();
-    //     listItem.appendChild(listName);
-    //     listItem.appendChild(numbers);
-    //     legend.appendChild(listItem);
-    //   });
-    // });
+    const tableColContainer = document.getElementById('table-columns');
+    tableColContainer.innerHTML = `<th>Academic Session</th>
+    <th>Semester</th>`;
     [sess, sem, _, gradeObj] = courseData[0];
     Object.keys(gradeObj).sort().forEach((grade) => {
       const listItem = document.createElement('li');
@@ -56,7 +47,66 @@ function courseAutocomplete() {
       return a + b;
     }, 0);
     document.getElementById('total-students').textContent = `Total students - ${total}`;
+    
     createPie('.pieID.legend', '.pieID.pie');
+
+    /**
+     * Table
+     */
+    function union(setA, setB) {
+      let _union = new Set(setA)
+      for (let elem of setB) {
+          _union.add(elem)
+      }
+      return _union
+    }
+    columns = new Set()
+    courseData.forEach((data) => {
+      [sess, sem, _, gradeObj] = data;
+      columns = union(columns, new Set(Object.keys(gradeObj)));
+    });
+    const indexStore = {};
+    [...columns].sort().forEach((v,i) => {
+      indexStore[v] = i
+      const elt = document.createElement('th');
+      elt.innerText = v.trim();
+      tableColContainer.appendChild(elt);
+    });
+
+    // Table
+    const elt = document.createElement('th');
+    elt.innerText = 'Total';
+    tableColContainer.appendChild(elt);
+
+    const tableDataContainer = document.getElementById('table-body');
+    tableDataContainer.innerHTML = '';
+    courseData.forEach((data, index) => {
+      [sess, sem, _, gradeObj] = data;
+      
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${sess}</td><td>${sem}</td>`;
+
+      [...columns].sort().forEach((v, i) => {
+        const elt = document.createElement('td');
+        elt.innerText = '0';
+        if (gradeObj[v]) {
+          elt.innerText = gradeObj[v];
+        }
+        row.appendChild(elt);
+      });
+
+      const total = Object.values(gradeObj).reduce(function(a, b){
+        return a + b;
+      }, 0);
+      const elt = document.createElement('td');
+      elt.innerText = total;
+      row.appendChild(elt);
+      tableDataContainer.appendChild(row);
+    });
+    $(document).ready( function () {
+      $('#table_id').DataTable();
+    });
+
   }
 }
 let flattenedGrades = null;
